@@ -35,7 +35,7 @@ def get_file_lines(path_csv_file):
 # General Path Definition
 # =============================================================================
 #path of the images 
-### TO BE CHANGED AS PER USER NEED
+### TO BE CHANGED AS PER USER'S NEED
 session_number = 1
 labelled_image = True
     
@@ -81,7 +81,8 @@ print("Done")
 # =============================================================================
 RAs_group_size = 20
 RAs_group_steps = 2
-Search_Simulation_steps = 2
+Search_Simulation_steps = 1
+Growth_Simulation_steps = 50
 
 RALs_fuse_factor = 0.5
 RALs_fill_factor = 1.5
@@ -113,11 +114,19 @@ MAS_Simulation = MAS_curved.Simulation_MAS(data_input_raw[_image_index],
                                     path_output_follow,
                                     simu_name)
 MAS_Simulation.Initialize_AD()
-MAS_Simulation.Perform_Search_Simulation(Search_Simulation_steps,
-                                             _coerced_X=False,
-                                             _coerced_Y=False,
-                                             _analyse_and_remove_Rows=True,
-                                             _edge_exploration = True)
+# =============================================================================
+# MAS_Simulation.Perform_Search_Simulation(Search_Simulation_steps,
+#                                              _coerced_X=True,
+#                                              _coerced_Y=False,
+#                                              _analyse_and_remove_Rows=True,
+#                                              _edge_exploration = True)
+# =============================================================================
+# =============================================================================
+# MAS_Simulation.Perform_Growth_Simulation(Growth_Simulation_steps)
+# 
+# =============================================================================
+
+MAS_Simulation.Perform_PA_Growth_Analysis(5)
 
 # =============================================================================
 # Simulation Analysis

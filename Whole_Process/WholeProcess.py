@@ -52,11 +52,11 @@ def CompleteProcess(_path_input_rgb_img, _path_output_root,
     
     
     MIS.All_Simulations(_path_input_rgb_img,
-                    _path_output_root,
-                    _labelled_images,
-                    _session,
-                    _RAs_group_size, _RAs_group_steps, _Simulation_steps,
-                    _RALs_fuse_factor, _RALs_fill_factor)
+                        _path_output_root,
+                        _labelled_images,
+                        _session,
+                        _RAs_group_size, _RAs_group_steps, _Simulation_steps,
+                        _RALs_fuse_factor, _RALs_fill_factor)
     
 
 if (__name__=="__main__"):
@@ -79,20 +79,47 @@ if (__name__=="__main__"):
 # =============================================================================
     
 # ========================== FOR LABELLED IMAGES ============================ #
-    CompleteProcess(_path_input_rgb_img="../Tutorial/Data/Labelled/Set3/Processed/Field_0/GrowthStage_0/RGB",
-                    _path_output_root="../Tutorial/Output_General/Set3",
-                    
-                    _labelled_images = True,
-                    _path_position_files="../Tutorial/Data/Labelled/Set3/Processed/Field_0/GrowthStage_0/Dataset",
-                    _rows_real_angle=80,
-                    
-                    _make_unique_folder_per_session=False, _session=1,
-                    _do_Otsu=True, _do_AD=False, # ici pour desactiver la rotation
-                    _save_AD_score_images=False, _save_BSAS_images=False,
-                    _bsas_threshold=1,
+# =============================================================================
+#     CompleteProcess(_path_input_rgb_img="../Tutorial/Data/Labelled/Set3/Processed/Field_0/GrowthStage_0/RGB",
+#                     _path_output_root="../Tutorial/Output_General/Set3",
+#                     
+#                     _labelled_images = True,
+#                     _path_position_files="../Tutorial/Data/Labelled/Set3/Processed/Field_0/GrowthStage_0/Dataset",
+#                     _rows_real_angle=80,
+#                     
+#                     _make_unique_folder_per_session=False, _session=1,
+#                     _do_Otsu=True, _do_AD=True,
+#                     _save_AD_score_images=False, _save_BSAS_images=False,
+#                     _bsas_threshold=1,
+#                     
+#                     _bin_div_X=2, _bin_div_Y=4,
+#                     
+#                     _RAs_group_size=20, _RAs_group_steps=2, _Simulation_steps=50,
+#                     _RALs_fuse_factor=0.5, _RALs_fill_factor=1.5)
+# =============================================================================
 
-                    _bin_div_X=2, _bin_div_Y=4,
-                    
-                    _RAs_group_size=20, _RAs_group_steps=2, _Simulation_steps=50,
-                    _RALs_fuse_factor=0.5, _RALs_fill_factor=1.5)
+#=============================== FOR EXPERIENCES
+    root_data = "C:/Users/eliot/Documents/Education/APT/Stage_Tournesols/Data/Stage_Jules_Marcai/Processed"
+    root_output = "C:/Users/eliot/Documents/Source/Education/APT/Plant_Counting_Analysis/Data"
+    nb_fields = 5
+    nb_gs = 3
+    
+    for _f in range (nb_fields):
+        for _gs in range (nb_gs):
+            CompleteProcess(_path_input_rgb_img=root_data+ f"/Field_{_f}/GrowthStage_{_gs}/RGB",
+                            _path_output_root=root_output+f"/JM_PA_growth_analysis/Field_{_f}/GrowthStage_{_gs}",
+                            
+                            _labelled_images = True,
+                            _path_position_files=root_data+ f"/Field_{_f}/GrowthStage_{_gs}/Dataset",
+                            _rows_real_angle=80,
+                            
+                            _make_unique_folder_per_session=False, _session=1,
+                            _do_Otsu=True, _do_AD=True,
+                            _save_AD_score_images=False, _save_BSAS_images=False,
+                            _bsas_threshold=1,
+                            
+                            _bin_div_X=2, _bin_div_Y=4,
+                            
+                            _RAs_group_size=20, _RAs_group_steps=2, _Simulation_steps=50,
+                            _RALs_fuse_factor=0.5, _RALs_fill_factor=1.5)
     
