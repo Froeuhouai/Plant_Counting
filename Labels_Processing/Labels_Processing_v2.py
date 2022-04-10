@@ -31,7 +31,7 @@ def Produce_Adjusted_Position_Files( _path_position_file,
                                      _pivot = np.array([960,540])
                                      ):
     
-    posFile = open(_path_position_file+"/"+"/captures_000.json", 'r')
+    posFile = open(_path_position_file+"/"+"captures_000.json", 'r')
     
     posFile_deserialized = json.load(posFile)
     
@@ -527,12 +527,12 @@ def Sample_Line(_para, _x_limits, _sample_dividor = 10):
 
 if (__name__ == "__main__"):
     
-    root_path = "../Tutorial/"
-    nb_fields = 100
-    nb_gs = 3
+    root_path = r"D:\Datasets\Datasets rangs courbes\Champs_courbes_2\DIR_gt_DIP"
+    nb_fields = 0
+    nb_gs = 0
     for i in range (nb_fields):
         for j in range (nb_gs):
-            gs_path = root_path+"/Processed/Field_{0}/GrowthStage_{1}".format(i,j)
+            gs_path = root_path+"/Real_images/Field_{0}/GrowthStage_{1}".format(i,j)
             Produce_Adjusted_Position_Files(gs_path+"/Dataset",
                                             gs_path+"/Positions",
                                             80,

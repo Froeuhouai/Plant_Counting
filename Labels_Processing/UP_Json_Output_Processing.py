@@ -150,9 +150,9 @@ def Partition_List(_list, _length, _step):
 
 if __name__=="__main__":
 
-    nb_fields = 1
-    nb_growth_stages = 1
-    nb_images_per_gs = 4
+    nb_fields = 1 #Nombre de champs généré par Unity (selon le paramètre de génération sur Unity) 
+    nb_growth_stages = 1 #Normalement toujours 1
+    nb_images_per_gs = 4 #Per growth stage <=> Nb d'images per subset pour 1 seul growth stage
     nb_annotations = 2
     nb_metrics = 1
     

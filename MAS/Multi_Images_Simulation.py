@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
-
 import os
 import json
 import numpy as np
 from PIL import Image
 
-import MAS_curved
+#import MAS_curved
+from Simulation_Driver import MetaSimulation
 
 os.chdir("../Utility")
 import general_IO as gIO
@@ -44,9 +43,13 @@ def All_Simulations(_path_input_rgb_img, _path_PreTreatment_and_FA,
     # General Path Definition
     # =============================================================================
     #
-    path_input_OTSU = _path_PreTreatment_and_FA+"/Output/Session_"+str(_session_number)+"/Otsu_R"
+    path_input_OTSU = _path_PreTreatment_and_FA+"/Output/Session_"+str(_session_number)+"/Otsu_Erroded"
     
-    path_input_PLANT_FT_PRED = _path_PreTreatment_and_FA+"/Output_FA/Session_"+str(_session_number)+"/Plant_FT_Predictions"
+    #path_input_PLANT_FT_PRED = _path_PreTreatment_and_FA+"/Output_FA/Session_"+str(_session_number)+"/Plant_FT_Predictions" #Si on fait le lcustering avec la Frequency Analysis il faut décommenter cette ligne et commenter celle du dessous
+    path_input_PLANT_FT_PRED = _path_PreTreatment_and_FA+"/Output_General_Clustering_Erroded_3/"
+    
+    path_input_DATAFRAME_COORD = _path_PreTreatment_and_FA+"/Output_General_Clustering_Erroded_4/"
+    
     
     path_output = _path_PreTreatment_and_FA+"/Output_Meta_Simulation/Session_"+str(_session_number)
     gIO.check_make_directory(path_output)
@@ -59,6 +62,7 @@ def All_Simulations(_path_input_rgb_img, _path_PreTreatment_and_FA,
     #
     names_input_OTSU = os.listdir(path_input_OTSU)
     names_input_PLANT_FT_PRED = os.listdir(path_input_PLANT_FT_PRED)
+    names_input_DATAFRAME_COORD = os.listdir(path_input_DATAFRAME_COORD)
     
     # =============================================================================
     # Data Collection
@@ -70,6 +74,9 @@ def All_Simulations(_path_input_rgb_img, _path_PreTreatment_and_FA,
     data_input_PLANT_FT_PRED = import_data(path_input_PLANT_FT_PRED,
                                            names_input_PLANT_FT_PRED,
                                            get_json_file_content)
+    data_input_DATAFRAME_COORD = import_data(path_input_DATAFRAME_COORD,
+                                             names_input_DATAFRAME_COORD,
+                                             get_json_file_content)
     
     if (_labelled_images):
         path_input_adjusted_position_files = _path_PreTreatment_and_FA+ \
@@ -89,12 +96,13 @@ def All_Simulations(_path_input_rgb_img, _path_PreTreatment_and_FA,
     # Meta Simulation Definition
     # =============================================================================
     
-    MetaSimulation = MAS_curved.MetaSimulation(meta_simu_name,
+    metaSimulation = MetaSimulation(meta_simu_name,
                                         path_output,
                                         names_input_raw,
                                         data_input_raw,
                                         data_input_PLANT_FT_PRED,
                                         data_input_OTSU,
+                                        data_input_DATAFRAME_COORD,
                                         _RAs_group_size,
                                         _RAs_group_steps,
                                         _RALs_fuse_factor,
@@ -103,16 +111,16 @@ def All_Simulations(_path_input_rgb_img, _path_PreTreatment_and_FA,
                                         _data_adjusted_position_files=data_adjusted_position_files)
     
     if (_labelled_images):
-        MetaSimulation.Launch_Meta_Simu_Labels(_coerced_X = False,
+        metaSimulation.Launch_Meta_Simu_Labels(_coerced_X = False,
                                                _coerced_Y = False,
-                                               _analyse_and_remove_Rows = True,
+                                               _analyse_and_remove_Rows = False,
                                                _rows_edges_exploration = True)
     
     else:
     
-        MetaSimulation.Launch_Meta_Simu_NoLabels(_coerced_X = False,
+        metaSimulation.Launch_Meta_Simu_NoLabels(_coerced_X = False,
                                                  _coerced_Y = False,
-                                                 _analyse_and_remove_Rows = True,
+                                                 _analyse_and_remove_Rows = False,
                                                  _rows_edges_exploration = True)
     
 if (__name__=="__main__"):
@@ -126,8 +134,8 @@ if (__name__=="__main__"):
 # =============================================================================
 
 # ========================== FOR LABELLED IMAGES ============================ #
-    All_Simulations(_path_input_rgb_img="../Tutorial/Data/Labelled/Set3/Processed/Field_0/GrowthStage_0/RGB",
-                    _path_PreTreatment_and_FA="../Tutorial/Output_General/Set3",
+    All_Simulations(_path_input_rgb_img=r"D:\Datasets\Datasets rangs courbes\Champs_courbes_2\DIR_gt_DIP\processed\Field_0\GrowthStage_0\RGB",
+                    _path_PreTreatment_and_FA=r"D:\Datasets\Datasets rangs courbes\Champs_courbes_2\DIR_gt_DIP\processed\Field_0\GrowthStage_0",
                     _labelled_images = True, _session_number=1,
-                    _RAs_group_size=20, _RAs_group_steps=2, _Simulation_steps=50,
+                    _RAs_group_size=25, _RAs_group_steps=2, _Simulation_steps=50,
                     _RALs_fuse_factor=0.5, _RALs_fill_factor=1.5)

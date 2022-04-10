@@ -14,7 +14,7 @@ import glob
 from skimage.util import random_noise
 path_scripts = os.path.dirname(os.path.abspath(__file__))
 os.chdir(path_scripts)
-import Segmentation_Otsu.otsu as o
+import otsu as o
 
 
 import numpy as np
@@ -93,7 +93,11 @@ class Data:
             image = np.array(255*((image+abs(np.min(image)))/(np.max(image+abs(np.min(image))))), dtype = 'uint8')
             image = self.apply_noise(image)
         print("conv_ExG_4", np.min(image), np.max(image))
-        #plt.imshow(image)
+        plt.figure()
+        plt.title("Excess Of Green on RGB_38")
+        plt.imshow(image)
+        
+        
         return image
 
 

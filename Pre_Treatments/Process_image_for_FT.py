@@ -81,7 +81,7 @@ def All_Pre_Treatment(_path_input_rgb_img, _path_output_root,
 # Images Definition
 # =============================================================================
     list_images = os.listdir(_path_input_rgb_img)
-    list_images.remove('.DS_Store')
+    #list_images.remove('.DS_Store')
     list_images_id = [img_name.split('.')[0] for img_name in list_images]
     nb_images = len(list_images)
 
@@ -126,6 +126,7 @@ def All_Pre_Treatment(_path_input_rgb_img, _path_output_root,
     path_output_BSAS_txt_R = [path_output_BSAS_txt_R_0, path_output_BSAS_txt_R_1]
     path_output_BSAS_images_R = [path_output_BSAS_images_R_0, path_output_BSAS_images_R_1]
 
+    best_angle = 0
     if _do_AD:
         AD_object_list = []
         for i in range(nb_images):
@@ -150,7 +151,7 @@ def All_Pre_Treatment(_path_input_rgb_img, _path_output_root,
         
         
         AD_voting = CRAD.CRAD_Voting(AD_object_list)
-        AD_voting.Get_Best_Angle()
+        best_angle = AD_voting.Get_Best_Angle()
         print("The best angle seems to be:", AD_voting.best_angle_min)
         AD_voting.Correct_AD_based_on_best_angle()
 
@@ -184,10 +185,11 @@ def All_Pre_Treatment(_path_input_rgb_img, _path_output_root,
         
         LblP.Produce_Adjusted_Position_Files(_path_position_files,
                                              path_output_adjusted_position_files,
-                                             _rows_real_angle,
+                                             #_rows_real_angle,
+                                             best_angle,
                                              _path_input_rgb_img,
                                              list_images)
-
+    return session_number
 if (__name__=="__main__"):
 
 # ========================== FOR NON-LABELLED IMAGES ======================== #
@@ -202,11 +204,11 @@ if (__name__=="__main__"):
 # =============================================================================
     
 # ========================== FOR LABELLED IMAGES ============================ #
-    All_Pre_Treatment(_path_input_rgb_img="../Tutorial/Data/Labelled/Set3/Processed/Field_0/GrowthStage_0/RGB",
+    All_Pre_Treatment(_path_input_rgb_img=r"D:\Datasets\Datasets rangs courbes\Champs_courbes_2\DIR_gt_DIP\processed\Field_0\GrowthStage_0\RGB",
                       _path_output_root="../Tutorial/Output_General/Set3",
                       _path_position_files="../Tutorial/Data/Labelled/Set3/Processed/Field_0/GrowthStage_0/Dataset",
                       _rows_real_angle=80,
                       _make_unique_folder_per_session=False, _session=1,
-                      _do_Otsu=True, _do_AD=True,
+                      _do_Otsu=True, _do_AD=False,
                       _save_AD_score_images=False, _save_BSAS_images=False,
                       _bsas_threshold=1)

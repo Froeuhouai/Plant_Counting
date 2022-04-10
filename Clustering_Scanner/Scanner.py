@@ -139,7 +139,7 @@ def pixel_median(dataframe_coord, img):
         ].to_numpy()
         # np.array of 2 lines and n columns
         coord_row_tr = coord_row.T
-
+        
         # Threshold to avoid smaller clusters not significant (noise)
         # Threshold at 0.1% of the size of the picture
         if coord_row.shape[0] > 0.0001 * (img_height * img_width):
@@ -326,7 +326,7 @@ def dist_direction_row(coord_pixels):
         directions.append(direction)
         distances.append(dist_min)
     print(
-        "--- %s seconds --- Start calculate vector direction"
+        "--- %s seconds --- \nStart calculate vector direction\n"
         % (time.time() - start_time)
     )
 
@@ -540,6 +540,9 @@ In the end, it is destined to be removed as it uses memory.
     longest_row_for = coordPixelsMedian[size_rows_sorted[0]]
     move_step_for = []
     sum_pixel_for = []
+    #Define the first value of sum_pixel_for as the sample value for covering rate calculation
+    sum_pixel_for.append(sum_plant_pixels(longest_row_for, img_array))
+    move_step_for.append(0)
     # To stock information on where the scanner were at specific times
     counter = 0
     list_coord_plot = []
@@ -703,7 +706,7 @@ def plot_cluster(
         c="darkgreen",
         label="Biggest row",
     )
-
+        
     scatter_row_2 = ax.scatter(
         np.array(coordPixels[index[1]]).T[0],
         np.array(coordPixels[index[1]]).T[1],
@@ -711,29 +714,19 @@ def plot_cluster(
         c="darkorange",
         label="Second biggest row",
     )
+    
+     
+    for i in range(0, len(list_coord_plot)) : 
+        # Plot scanner after a certain amount of translations
+        ax.scatter(
+            np.array(list_coord_plot[i]).T[0],
+            np.array(list_coord_plot[i]).T[1],
+            s=0.5,
+            #c=["b", "c", "m", "y", "deeppink", "lightblue", "brown", "lightgreen"][i%8],
+            c="c",
+            label="Last place of the scanner",
+        )
 
-    # Plot scanner after a certain amount of translations
-    scatter_row_3 = ax.scatter(
-        np.array(list_coord_plot[0]).T[0],
-        np.array(list_coord_plot[0]).T[1],
-        s=0.5,
-        c="lightblue",
-        label="Last place of the scanner",
-    )
-    scatter_row_4 = ax.scatter(
-        np.array(list_coord_plot[1]).T[0],
-        np.array(list_coord_plot[1]).T[1],
-        s=0.5,
-        c="blue",
-        label="Last place of the scanner",
-    )
-    scatter_row_5 = ax.scatter(
-        np.array(list_coord_plot[2]).T[0],
-        np.array(list_coord_plot[2]).T[1],
-        s=0.5,
-        c="darkblue",
-        label="Last place of the scanner",
-    )
 
     # Direction vector
     X_vec = statistics.median(np.array(start_row).T[0])
@@ -769,8 +762,64 @@ def plot_cluster(
     plt.show()
     return
 
+def Plot_vectors(directions, dir_mean, dir_med, by_row, by_initialisated_plant) :
+    
+    #Initialising the useful objects for ploting vectors from coodPixelsMedian
+    X_vec = []
+    Y_vec = []
+    #Initialising the figure to plot
+    fig = plt.figure(figsize=(8, 10))
+    ax = fig.add_subplot()
+    plt.title("Translations representation by pixels between row 1 and row 2")
+    
+    #To print the directions found between the longest row and the second longest row 
+    for pixel_direction in directions :
+        X_vec = pixel_direction[1]
+        Y_vec = pixel_direction[0]
+        ax.arrow(
+                0,
+                0,
+                X_vec,
+                Y_vec,
+                label="Mean direction vector",
+                head_width=10,
+                head_length=10,
+                fc="violet",
+                ec="violet",
+                shape="full",
+                length_includes_head=True,
+                )
+    #Adding dir_med (red) et dir_mean (blue) vectors to compare
+    ax.arrow(
+                0,
+                0,
+                dir_med[1],
+                dir_med[0],
+                label="Median direction vector",
+                head_width=10,
+                head_length=10,
+                fc="red",
+                ec="red",
+                shape="full",
+                length_includes_head=True,
+                )
+    ax.arrow(
+                0,
+                0,
+                dir_mean[1],
+                dir_mean[0],
+                label="Median direction vector",
+                head_width=10,
+                head_length=10,
+                fc="blue",
+                ec="blue",
+                shape="full",
+                length_includes_head=True,
+                )
+    plt.show()
 
-def Total_Plant_Position(path_image_input, epsilon, min_point):
+
+def Total_Plant_Position(path_image_input, epsilon, min_point, _set, _session):
     """
     Main function executing the whole script for all images detained in the
     input path given by the user.
@@ -801,13 +850,14 @@ def Total_Plant_Position(path_image_input, epsilon, min_point):
 
     start_time = time.time()
 
-    list_image = listdir(path_image_input)
+    list_image = listdir(path_image_input.format(_set, _session))
+
     if ".DS_Store" in list_image:
         list_image.remove(".DS_Store")
     for image in list_image:
         start_time_img = time.time()
         print("--------------------------- \n start ", image)
-        imgColor = Image.open(path_image_input + "/" + image)
+        imgColor = Image.open(path_image_input.format(_set, _session) + "/" + image)
         # Be sure to be in a greyscale images, with only one channel
         img = imgColor.convert(mode="L")
 
@@ -815,19 +865,26 @@ def Total_Plant_Position(path_image_input, epsilon, min_point):
 
         print("DBSCAN")
         dataframe_coord = DBSCAN_clustering(img, epsilon, min_point)
-        coordPixelsMedian = pixel_median(dataframe_coord, img)
+        coordPixelsMedian = pixel_median(dataframe_coord, img)##########
+        print("len(coordPixelsMedian) : ", len(coordPixelsMedian))
         coordPixelsTotal = list_coord(dataframe_coord, img)
         print(
-            "--- %s seconds --- Start calculate vector direction"
+            "--- %s seconds --- \nStart calculate vector direction"
             % (time.time() - start_time_img)
         )
         directions = dist_direction_row(coordPixelsMedian)
-        #print(directions)
-        dir_mean = direction_mean(directions)
+        print("directions : ", directions)##################
+        dir_mean = direction_mean(directions) #calcul du vecteur de direction du scanner
         dir_med = direction_med(directions)
         print("dirMean", dir_mean, "dir_med", dir_med)
         # pixel_median return a list of lists of size 2.
         # List of the coordonnates of the pixels
+        Plot_vectors(directions,
+                     dir_mean,
+                     dir_med,
+                     by_row = True,
+                     by_initialisated_plant = False,
+                     )
 
         # calcul of the inter-row distance
         sum_pixel_for, move_step_for, list_coord_plot = calculate_dist_interRow(
@@ -841,19 +898,23 @@ def Total_Plant_Position(path_image_input, epsilon, min_point):
             dir_mean,
             list_coord_plot,
         )
-
-        plt.plot(move_step_for, [sum_li / sum_pixel_for[0] for sum_li in sum_pixel_for])
-
+        print("sum_pixel_for : ", sum_pixel_for)
+        plt.plot(move_step_for, [sum_li / sum_pixel_for[0] for sum_li in sum_pixel_for]) #Plot qui devrait permettre de faire l'analyse de fourier
+        plt.title("Taux de recouvrement du scanner")
+        axis = plt.gca()
+        axis.set_xlabel("Itération du scanner")
+        axis.set_ylabel("Recouvrement")
         plt.show()
-        print("--- %s seconds ---" % (time.time() - start_time_img))
-        break
-    print("--- %s seconds ---" % (time.time() - start_time))
+        print("--- %s seconds ---\n" % (time.time() - start_time_img))
+    print("--- %s seconds ---\n" % (time.time() - start_time))
 
     return
 
 
 Total_Plant_Position(
-    path_image_input="./../../Images",
+    path_image_input= "../Tutorial/Output_General/Set{0}/Output/Session_{1}/Otsu_R",
     epsilon=20,
     min_point=30,
+    _set = 2,
+    _session = 1,
 )

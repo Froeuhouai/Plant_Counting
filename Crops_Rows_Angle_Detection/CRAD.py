@@ -45,6 +45,7 @@ class CRAD_Voting:
         self.angles_sort.sort()
 
         self.best_angle_min = self.angles_sort[-1][1]
+        return self.best_angle_min
 
     def Correct_AD_based_on_best_angle(self):
         print("Correcting LDs based on best angle")
